@@ -70,11 +70,11 @@
   @media(max-width:800px){.history-grid,.most-picked-grid{grid-template-columns:1fr;}}
   .hist-table-wrap{overflow-x:auto;}
   .hist-table,.mp-table{width:100%;border-collapse:collapse;font-size:0.85rem;}
-  .hist-table .yr-header td,.mp-table .yr-header td{background:#D4AC17;color:#1a1200;font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;text-align:center;padding:8px 12px;font-weight:700;}
-  .hist-table .col-header th,.mp-table .col-header th{background:#2B4B8C;color:var(--white);font-size:0.78rem;font-weight:700;padding:7px 12px;text-align:center;}
-  .hist-table tbody tr:nth-child(odd) td,.mp-table tbody tr:nth-child(odd) td{background:#1e2e4a;color:var(--light);}
-  .hist-table tbody tr:nth-child(even) td,.mp-table tbody tr:nth-child(even) td{background:#162238;color:var(--light);}
-  .hist-table td,.mp-table td{padding:7px 12px;text-align:center;border:1px solid #2a3a5a;}
+  .hist-table .yr-header td,.mp-table .yr-header td{background:var(--orange);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;text-align:center;padding:8px 12px;}
+  .hist-table .col-header th,.mp-table .col-header th{background:var(--dark3);color:var(--muted);font-size:0.72rem;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:7px 12px;text-align:center;}
+  .hist-table tbody tr:nth-child(odd) td,.mp-table tbody tr:nth-child(odd) td{background:var(--dark3);color:var(--light);}
+  .hist-table tbody tr:nth-child(even) td,.mp-table tbody tr:nth-child(even) td{background:var(--dark2);color:var(--light);}
+  .hist-table td,.mp-table td{padding:7px 12px;text-align:center;border:1px solid var(--dark4);}
   .hist-table td:nth-child(2){text-align:left;}
   .most-picked-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-bottom:3rem;}
 
@@ -234,6 +234,53 @@
   .empty-state .es-icon{font-size:2.5rem;margin-bottom:1rem;}
   .overflow-x{overflow-x:auto;}
   code{color:var(--orange);}
+
+  /* NOTIFICATIONS */
+  .notif-feed{max-height:280px;overflow-y:auto;}
+  .notif-item{display:flex;align-items:flex-start;gap:0.75rem;padding:0.7rem 1.2rem;border-bottom:1px solid var(--dark3);transition:background 0.15s;}
+  .notif-item:last-child{border-bottom:none;}
+  .notif-item.unread{background:rgba(255,107,0,0.05);}
+  .notif-dot{width:7px;height:7px;border-radius:50%;background:var(--orange);flex-shrink:0;margin-top:5px;}
+  .notif-dot.read{background:transparent;border:1px solid var(--mid);}
+  .notif-text{font-size:0.84rem;line-height:1.4;}
+  .notif-time{font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--muted);margin-top:2px;}
+  .notif-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--orange);color:white;border-radius:50%;width:16px;height:16px;font-size:0.6rem;font-weight:700;margin-left:4px;vertical-align:middle;font-family:'DM Mono',monospace;}
+
+  /* MAX POINTS BAR on picker */
+  .max-pts-bar{background:var(--dark2);border:1px solid var(--mid);border-radius:var(--radius);padding:0.75rem 1.2rem;margin-bottom:1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;}
+  .max-pts-label{font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);}
+  .max-pts-value{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:2px;color:var(--gold);}
+  .max-pts-breakdown{font-family:'DM Mono',monospace;font-size:0.72rem;color:var(--muted);display:flex;gap:0.5rem;flex-wrap:wrap;}
+  .max-pts-chip{background:var(--dark3);border:1px solid var(--dark4);border-radius:4px;padding:2px 7px;}
+  .max-pts-chip.has-team{border-color:rgba(255,107,0,0.4);color:var(--orange);}
+
+  /* TIEBREAKER — subtle footnote style */
+  .tiebreaker-footnote{margin-top:2rem;padding:0.75rem 1rem;border-top:1px solid var(--dark4);font-size:0.75rem;color:var(--muted);line-height:1.6;}
+  .tiebreaker-footnote strong{color:var(--muted);font-weight:600;}
+
+  /* SORTABLE leaderboard headers */
+  .sort-btn{background:none;border:none;color:inherit;font:inherit;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0;}
+  .sort-btn:hover{color:var(--orange);}
+  .sort-arrow{font-size:0.65rem;opacity:0.5;}
+  .sort-btn.active .sort-arrow{opacity:1;color:var(--orange);}
+
+  /* HISTORY tables — dark scheme matching site */
+  .hist-table .yr-header td,.mp-table .yr-header td{background:var(--orange);color:var(--white);font-family:'Bebas Neue',sans-serif;font-size:1rem;letter-spacing:2px;text-align:center;padding:8px 12px;}
+  .hist-table .col-header th,.mp-table .col-header th{background:var(--dark3);color:var(--muted);font-size:0.72rem;font-family:'DM Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:7px 12px;text-align:center;}
+  .hist-table tbody tr:nth-child(odd) td,.mp-table tbody tr:nth-child(odd) td{background:var(--dark3);color:var(--light);}
+  .hist-table tbody tr:nth-child(even) td,.mp-table tbody tr:nth-child(even) td{background:var(--dark2);color:var(--light);}
+  .hist-table td,.mp-table td{padding:7px 12px;text-align:center;border:1px solid var(--dark4);}
+  .hist-table td:nth-child(2){text-align:left;}
+
+  /* REMOVE button — now hidden behind expand */
+  .btn-remove-expand{background:transparent;border:1px solid rgba(231,76,60,0.3);color:rgba(231,76,60,0.5);border-radius:4px;padding:3px 8px;font-size:0.7rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+  .btn-remove-expand:hover{border-color:var(--red);color:var(--red);background:rgba(231,76,60,0.05);}
+  .remove-confirm-row{display:none;background:rgba(231,76,60,0.05);border:1px solid rgba(231,76,60,0.3);border-radius:6px;padding:8px 12px;margin-top:6px;font-size:0.8rem;color:var(--red);}
+  .remove-confirm-row.open{display:block;}
+
+  /* LEADERBOARD pick tags inline */
+  .lb-picks{display:flex;flex-wrap:wrap;gap:3px;margin-top:3px;}
+
 </style>
 </head>
 <body>
@@ -288,7 +335,7 @@
       <span id="authLabel">Not signed in</span>
     </div>
     <div class="settings-wrap">
-      <button class="settings-btn" onclick="toggleSettings()">⚙ Settings</button>
+      <button class="settings-btn" onclick="toggleSettings()">⚙ Settings<span class="notif-badge" id="notifBadge" style="display:none">0</span></button>
       <div class="settings-dropdown" id="settingsDropdown">
         <button class="settings-item" id="adminMenuItem" onclick="handleAdminClick()">🔒 Admin Panel</button>
         <button class="settings-item" onclick="openEmailjsConfig()">📧 Email Config</button>
@@ -332,9 +379,72 @@
       </div>
     </div>
 
-    <!-- Historical Tables -->
-    <div class="history-section">
-      <h2>📜 Past Results</h2>
+  <!-- Step 2: Pick Teams -->
+  <div id="step-pick" style="display:none">
+    <div class="picker-section">
+      <div class="picker-header">
+        <h2 id="pickerTitle">Select Your 4 Teams</h2>
+        <div class="selection-counter">Selected: <strong id="selCount">0</strong> / 4</div>
+      </div>
+      <div class="selected-strip" id="selectedStrip">
+        <span class="selected-empty" id="selEmpty">No teams selected yet — choose 4 below</span>
+      </div>
+      <div class="max-pts-bar" id="maxPtsBar" style="display:none"><div><div class="max-pts-label">Max possible points</div><div class="max-pts-breakdown" id="maxPtsBreakdown"></div></div><div class="max-pts-value" id="maxPtsValue">—</div></div>
+      <div id="teamsList"></div>
+    </div>
+    <div class="submit-wrap">
+      <button class="btn-primary" id="submitBtn" onclick="submitPicks()" style="opacity:0.4;pointer-events:none">Submit My Picks</button>
+      <button class="btn-secondary" style="max-width:none;margin-top:0.5rem" onclick="cancelPick()">← Back</button>
+    </div>
+  </div>
+
+  <!-- Step 3: Confirmation -->
+  <div id="step-confirm" style="display:none">
+    <div class="confirm-view">
+      <div class="confirm-icon">🏀</div>
+      <h2>You're In!</h2>
+      <p id="confirmGreeting">Your picks have been saved and are pending admin approval.</p>
+      <div class="pending-note" id="pendingNote">⏳ Your entry is pending approval by the admin. You'll appear on the leaderboard once approved.</div>
+      <div class="picks-summary" id="confirmPicks"></div>
+      <button class="btn-primary" onclick="showView('dashboard')">View Leaderboard →</button>
+      <p class="created-by">Created by Charlie and Claude</p>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ DASHBOARD ═══════════════ -->
+<div class="view" id="view-dashboard">
+  <div class="dashboard">
+    <div class="dash-header">
+      <h2>🏆 Leaderboard <span class="live-badge"><span class="live-dot"></span>LIVE</span></h2>
+      <p>Real-time standings — updates automatically as results come in. Only approved entries shown.</p>
+    </div>
+    <div class="dash-grid">
+      <div class="card">
+        <div class="card-header">
+          <h3>Standings</h3>
+          <div style="display:flex;gap:0.75rem">
+            <button class="sort-btn active" id="sortByScore" onclick="setLbSort('score')">Score <span class="sort-arrow">▼</span></button>
+            <button class="sort-btn" id="sortByMax" onclick="setLbSort('max')">Max <span class="sort-arrow">▼</span></button>
+          </div>
+        </div>
+        <div class="card-body" id="leaderboardBody"></div>
+      </div>
+      <div class="card">
+        <div class="card-header"><h3>All Picks</h3><span>EVERY PLAYER'S SELECTIONS</span></div>
+        <div class="card-body overflow-x" id="allPicksBody"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:1.5rem">
+      <div class="card-header"><h3>2026 Most Picked Teams</h3><span>CURRENT FIELD</span></div>
+      <div class="card-body overflow-x" id="pickFreqBody"></div>
+    </div>
+    <div class="tiebreaker-footnote">
+      <strong>* Tiebreakers:</strong> 1st — team that advances furthest wins; 2nd — if equal, compare second-furthest team (and so on); Final — split if selections are identical.
+
+    <!-- Historical Results -->
+    <div style="margin-top:1.5rem">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.6rem;letter-spacing:3px;margin-bottom:1.5rem;color:var(--gold)">📜 Past Results</div>
       <div class="history-grid">
         <div class="hist-table-wrap">
           <table class="hist-table">
@@ -388,66 +498,7 @@
         </table>
       </div>
     </div>
-  </div>
 
-  <!-- Step 2: Pick Teams -->
-  <div id="step-pick" style="display:none">
-    <div class="picker-section">
-      <div class="picker-header">
-        <h2 id="pickerTitle">Select Your 4 Teams</h2>
-        <div class="selection-counter">Selected: <strong id="selCount">0</strong> / 4</div>
-      </div>
-      <div class="selected-strip" id="selectedStrip">
-        <span class="selected-empty" id="selEmpty">No teams selected yet — choose 4 below</span>
-      </div>
-      <div id="teamsList"></div>
-    </div>
-    <div class="submit-wrap">
-      <button class="btn-primary" id="submitBtn" onclick="submitPicks()" style="opacity:0.4;pointer-events:none">Submit My Picks</button>
-      <button class="btn-secondary" style="max-width:none;margin-top:0.5rem" onclick="cancelPick()">← Back</button>
-    </div>
-  </div>
-
-  <!-- Step 3: Confirmation -->
-  <div id="step-confirm" style="display:none">
-    <div class="confirm-view">
-      <div class="confirm-icon">🏀</div>
-      <h2>You're In!</h2>
-      <p id="confirmGreeting">Your picks have been saved and are pending admin approval.</p>
-      <div class="pending-note" id="pendingNote">⏳ Your entry is pending approval by the admin. You'll appear on the leaderboard once approved.</div>
-      <div class="picks-summary" id="confirmPicks"></div>
-      <button class="btn-primary" onclick="showView('dashboard')">View Leaderboard →</button>
-      <p class="created-by">Created by Charlie and Claude</p>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════ DASHBOARD ═══════════════ -->
-<div class="view" id="view-dashboard">
-  <div class="dashboard">
-    <div class="dash-header">
-      <h2>🏆 Leaderboard <span class="live-badge"><span class="live-dot"></span>LIVE</span></h2>
-      <p>Real-time standings — updates automatically as results come in. Only approved entries shown.</p>
-    </div>
-    <div class="dash-grid">
-      <div class="card">
-        <div class="card-header"><h3>Standings</h3><span>SCORE / MAX POSSIBLE</span></div>
-        <div class="card-body" id="leaderboardBody"></div>
-      </div>
-      <div class="card">
-        <div class="card-header"><h3>All Picks</h3><span>EVERY PLAYER'S SELECTIONS</span></div>
-        <div class="card-body overflow-x" id="allPicksBody"></div>
-      </div>
-    </div>
-    <div class="card" style="margin-top:1.5rem">
-      <div class="card-header"><h3>2026 Most Picked Teams</h3><span>CURRENT FIELD</span></div>
-      <div class="card-body overflow-x" id="pickFreqBody"></div>
-    </div>
-    <div class="tiebreaker-notes">
-      <h3>Tiebreaker Rules</h3>
-      <div class="tb-note"><span class="tb-num">1ST</span><span>Player whose team advances the furthest in the tournament wins the tiebreaker.</span></div>
-      <div class="tb-note"><span class="tb-num">2ND</span><span>If both players have a team that advanced equally far (e.g., both won the championship), their second furthest team is used instead — and so on for a 3rd tiebreaker if needed.</span></div>
-      <div class="tb-note"><span class="tb-num">FINAL</span><span>If both players have identical selections, the winnings are split equally.</span></div>
     </div>
   </div>
 </div>
@@ -468,9 +519,21 @@
       <h2>🏀 Admin Panel</h2>
       <p id="adminWelcome">Signed in as admin.</p>
 
+      <!-- Notifications -->
+      <div class="card" style="margin-bottom:1.5rem">
+        <div class="card-header" style="justify-content:space-between">
+          <h3>🔔 Notifications</h3>
+          <button onclick="markAllRead()" style="background:none;border:none;color:var(--muted);font-size:0.75rem;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:1px">Mark all read</button>
+        </div>
+        <div class="notif-feed card-body" id="notifFeed">
+          <div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:0.85rem">No notifications yet</div>
+        </div>
+      </div>
+
       <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
         <button id="entryLockBtn" class="btn-lock unlocked" onclick="toggleEntryLock()">🔓 Entries Open — Click to Lock</button>
         <span style="font-size:0.8rem;color:var(--muted)">Locking prevents all new submissions and changes.</span>
+      </div>
       </div>
 
       <div class="admin-note">💡 Click a team name to mark them as the winner. Click again to undo. Changes sync live to all viewers instantly.</div>
@@ -505,7 +568,7 @@
       <div class="card" style="margin-bottom:1.5rem">
         <div class="card-body overflow-x">
           <table class="picks-table">
-            <thead><tr><th>Player</th><th style="text-align:center">Confirmed ✓</th></tr></thead>
+            <thead><tr><th>Player</th><th>Approval Status</th><th style="text-align:center">Confirmed ✓</th></tr></thead>
             <tbody id="trackingRows"></tbody>
           </table>
         </div>
@@ -693,6 +756,7 @@ function startListeners(){
   playersRef.onSnapshot(snap=>{
     PLAYERS = snap.docs.map(d=>({id:d.id,...d.data()}));
     renderDashboard();
+    renderNotifications();
     if(isAdmin) renderAdmin();
   });
 }
@@ -882,6 +946,21 @@ function updateSelectionUI(){
   });
   const btn=document.getElementById('submitBtn'); const ready=currentSelections.length===4;
   btn.style.opacity=ready?'1':'0.4'; btn.style.pointerEvents=ready?'auto':'none';
+  // Max points bar
+  const bar=document.getElementById('maxPtsBar');
+  const valEl=document.getElementById('maxPtsValue');
+  const brkEl=document.getElementById('maxPtsBreakdown');
+  if(currentSelections.length===0){ bar.style.display='none'; return; }
+  bar.style.display='flex';
+  let total=0;
+  const chips=currentSelections.map(id=>{
+    const t=getTeam(id); if(!t)return '';
+    const maxPts=(1+1+1+2+4+8)*t.seed;
+    total+=maxPts;
+    return `<span class="max-pts-chip has-team">#${t.seed} ${t.name} = ${maxPts}</span>`;
+  });
+  valEl.textContent=total+' pts';
+  brkEl.innerHTML=chips.join('');
 }
 
 async function submitPicks(){
@@ -923,10 +1002,20 @@ function showConfirmation(player,justSubmitted){
 // ════════════════════════════════════════
 // DASHBOARD (re-renders on every snapshot)
 // ════════════════════════════════════════
+let lbSortMode='score';
+function setLbSort(mode){
+  lbSortMode=mode;
+  document.getElementById('sortByScore').classList.toggle('active',mode==='score');
+  document.getElementById('sortByMax').classList.toggle('active',mode==='max');
+  renderDashboard();
+}
+
 function renderDashboard(){
   const approved=PLAYERS.filter(p=>p.approved);
   const{scores,maxScores,elimSet}=computeScores(approved);
-  const sorted=[...approved].sort((a,b)=>(scores[b.id]||0)-(scores[a.id]||0));
+  const sortedByScore=[...approved].sort((a,b)=>(scores[b.id]||0)-(scores[a.id]||0));
+  const sortedByMax=[...approved].sort((a,b)=>(maxScores[b.id]||0)-(maxScores[a.id]||0));
+  const sorted=lbSortMode==='max'?sortedByMax:sortedByScore;
   const placeEmoji={1:'🥇',2:'🥈',3:'🥉',4:'4️⃣'};
 
   const lb=document.getElementById('leaderboardBody');
@@ -937,9 +1026,13 @@ function renderDashboard(){
     lb.innerHTML=sorted.map((p,i)=>{
       const placeNum=Object.keys(GS.places).find(k=>GS.places[k]===p.id);
       const badge=placeNum?`<span class="winner-badge">${placeEmoji[placeNum]} ${['','1st','2nd','3rd','4th'][placeNum]}</span>`:'';
-      return `<div class="lb-row ${i===0?'highlight':''}">
+      const pickTags=(p.picks||[]).map(id=>{
+        const t=getTeam(id); if(!t)return '';
+        return `<span class="pick-tag ${elimSet.has(id)?'eliminated':'alive'}">#${t.seed} ${t.name}</span>`;
+      }).join('');
+      return `<div class="lb-row ${i===0&&lbSortMode==='score'?'highlight':''}">
         <div class="lb-rank ${i<3?'top3':''}">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</div>
-        <div class="lb-name">${p.name} ${badge}</div>
+        <div><div class="lb-name">${p.name} ${badge}</div><div class="lb-picks">${pickTags}</div></div>
         <div class="lb-score">${scores[p.id]||0}</div>
         <div class="lb-max">max ${maxScores[p.id]||0}</div>
       </div>`;
@@ -952,14 +1045,14 @@ function renderDashboard(){
     ap.innerHTML='<div class="empty-state"><div class="es-icon">📋</div><p>No picks yet.</p></div>';
   } else {
     ap.innerHTML=`<table class="picks-table"><thead><tr><th>Player</th><th>Picks</th><th>Pts</th></tr></thead><tbody>
-      ${sorted.map(p=>`<tr><td>${p.name}</td><td>${(p.picks||[]).map(id=>{
+      ${sortedByScore.map(p=>`<tr><td>${p.name}</td><td>${(p.picks||[]).map(id=>{
         const t=getTeam(id); if(!t)return '';
         return `<span class="pick-tag ${elimSet.has(id)?'eliminated':'alive'}">#${t.seed} ${t.name}</span>`;
       }).join('')}</td><td style="font-family:'DM Mono',monospace;color:var(--orange)">${scores[p.id]||0}</td></tr>`).join('')}
     </tbody></table>`;
   }
 
-  // Pick frequency
+  // Pick frequency — styled pick tags
   const freq={};
   approved.forEach(p=>{ (p.picks||[]).forEach(id=>{ freq[id]=(freq[id]||0)+1; }); });
   const freqArr=Object.entries(freq).map(([id,cnt])=>({team:getTeam(id),cnt})).filter(x=>x.team).sort((a,b)=>b.cnt-a.cnt);
@@ -968,8 +1061,62 @@ function renderDashboard(){
   pf.innerHTML=freqArr.length===0
     ?'<div class="empty-state" style="padding:1.5rem"><p>No picks yet.</p></div>'
     :`<table class="picks-table"><thead><tr><th>Team</th><th>Seed</th><th>Region</th><th>Times Picked</th></tr></thead><tbody>
-      ${freqArr.map(({team,cnt})=>`<tr><td>${team.name}</td><td>${team.seed}</td><td>${team.region}</td><td style="font-family:'DM Mono',monospace;color:var(--orange)">${cnt}</td></tr>`).join('')}
+      ${freqArr.map(({team,cnt})=>`<tr>
+        <td><span class="pick-tag ${elimSet.has(team.id)?'eliminated':'alive'}">#${team.seed} ${team.name}</span></td>
+        <td>${team.seed}</td><td>${team.region}</td>
+        <td style="font-family:'DM Mono',monospace;color:var(--orange)">${cnt}</td>
+      </tr>`).join('')}
     </tbody></table>`;
+}
+
+
+// ════════════════════════════════════════
+// NOTIFICATIONS
+// ════════════════════════════════════════
+let notifReadTime = parseInt(localStorage.getItem('notifReadTime')||'0');
+
+function getNotifications(){
+  // Build notification list from PLAYERS sorted by submittedAt descending
+  const events=[];
+  PLAYERS.forEach(p=>{
+    if(p.submittedAt) events.push({
+      time:new Date(p.submittedAt).getTime(),
+      text:`<strong>${p.name}</strong> submitted their picks`,
+      sub:formatCT(p.submittedAt),
+      type:'submit'
+    });
+    if(p.approvedAt) events.push({
+      time:new Date(p.approvedAt).getTime(),
+      text:`<strong>${p.name}</strong> was approved`,
+      sub:formatCT(p.approvedAt),
+      type:'approve'
+    });
+  });
+  return events.sort((a,b)=>b.time-a.time);
+}
+
+function renderNotifications(){
+  const events=getNotifications();
+  const unread=events.filter(e=>e.time>notifReadTime).length;
+  const badge=document.getElementById('notifBadge');
+  if(badge){ badge.style.display=unread>0?'inline-flex':'none'; badge.textContent=unread>9?'9+':unread; }
+  const feed=document.getElementById('notifFeed');
+  if(!feed)return;
+  if(events.length===0){
+    feed.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:0.85rem">No notifications yet</div>';
+    return;
+  }
+  feed.innerHTML=events.map(e=>`
+    <div class="notif-item ${e.time>notifReadTime?'unread':''}">
+      <div class="notif-dot ${e.time>notifReadTime?'':'read'}"></div>
+      <div><div class="notif-text">${e.text}</div><div class="notif-time">${e.sub}</div></div>
+    </div>`).join('');
+}
+
+function markAllRead(){
+  notifReadTime=Date.now();
+  localStorage.setItem('notifReadTime',notifReadTime);
+  renderNotifications();
 }
 
 // ════════════════════════════════════════
@@ -980,6 +1127,7 @@ function renderAdmin(){
   document.getElementById('admin-locked').style.display='none';
   document.getElementById('admin-content').style.display='block';
   if(currentUser) document.getElementById('adminWelcome').textContent=`Signed in as ${currentUser.displayName||currentUser.email}`;
+  renderNotifications();
 
   const lb=document.getElementById('entryLockBtn');
   if(GS.entriesLocked){ lb.className='btn-lock locked'; lb.textContent='🔒 Entries Locked — Click to Unlock'; }
@@ -1051,16 +1199,22 @@ function renderAdmin(){
         ${!p.approved
           ?`<button class="btn-approve" onclick="approvePlayer('${p.id}')">✓ Approve</button>`
           :`<button class="btn-approve" style="opacity:0.5" onclick="unapprovePlayer('${p.id}')">↩ Unapprove</button>`}
-        <button class="btn-remove" onclick="promptRemovePlayer('${p.id}','${p.name.replace(/'/g,"\\'")}')">✕ Remove</button>
+        <button class="btn-remove-expand" onclick="toggleRemoveConfirm('${p.id}')">✕ Remove</button>
+        <div class="remove-confirm-row" id="rc-${p.id}">
+          ⚠️ Remove <strong>${p.name}</strong>? This cannot be undone.
+          <button class="btn-danger" style="margin-left:8px;padding:3px 10px;font-size:0.75rem" onclick="promptRemovePlayer('${p.id}','${p.name.replace(/'/g,\"\\\'\")}')">Confirm Remove</button>
+          <button onclick="toggleRemoveConfirm('${p.id}')" style="background:none;border:none;color:var(--muted);cursor:pointer;margin-left:6px;font-size:0.8rem">Cancel</button>
+        </div>
       </td>
     </tr>`).join('');
 
   // Tracking
   const trows=document.getElementById('trackingRows');
   trows.innerHTML=PLAYERS.length===0
-    ?'<tr><td colspan="2" style="text-align:center;padding:1rem;color:var(--muted)">No players yet</td></tr>'
+    ?'<tr><td colspan="3" style="text-align:center;padding:1rem;color:var(--muted)">No players yet</td></tr>'
     :PLAYERS.map(p=>`<tr>
       <td>${p.name} <span style="font-size:0.75rem;color:var(--muted)">(${p.email})</span></td>
+      <td>${p.approved?'<span class="badge badge-green">Approved</span>':'<span class="badge badge-muted">Pending</span>'}</td>
       <td style="text-align:center"><input type="checkbox" class="tracking-check" ${p.tracking?'checked':''} onchange="toggleTracking('${p.id}',this.checked)"></td>
     </tr>`).join('');
 
@@ -1130,6 +1284,10 @@ async function toggleTracking(id,val){
   await playersRef.doc(id).update({tracking:val});
 }
 
+function toggleRemoveConfirm(id){
+  const row=document.getElementById('rc-'+id);
+  if(row) row.classList.toggle('open');
+}
 let pendingRemoveId=null;
 function promptRemovePlayer(id,name){
   pendingRemoveId=id;
@@ -1144,7 +1302,7 @@ async function confirmRemovePlayer(){
   const newPlaces={...GS.places};
   Object.keys(newPlaces).forEach(k=>{ if(newPlaces[k]===pendingRemoveId)newPlaces[k]=null; });
   await gameStateRef.set({places:newPlaces},{merge:true});
-  closeRemoveModal(); showToast('Entry removed','success');
+  closeRemoveModal(); showToast('Entry removed','success'); const rcRow=document.getElementById('rc-'+pendingRemoveId); if(rcRow)rcRow.classList.remove('open');
 }
 
 async function declarePlaces(){

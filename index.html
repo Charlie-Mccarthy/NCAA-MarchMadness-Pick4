@@ -1122,6 +1122,45 @@ function markAllRead(){
 // ════════════════════════════════════════
 // ADMIN RENDERING
 // ════════════════════════════════════════
+
+function buildPlayerRow(p, scores, maxScores, elimSet){
+  var dm = "font-family:'DM Mono',monospace";
+  var pickTags = (p.picks||[]).map(function(id){
+    var t = getTeam(id);
+    if(!t) return '';
+    return '<span class="pick-tag ' + (elimSet.has(id) ? 'eliminated' : 'alive') + '">#' + t.seed + ' ' + t.name + '</span>';
+  }).join('');
+  var statusBadge = p.approved
+    ? '<span class="badge badge-green">Approved</span>'
+    : '<span class="badge badge-muted">Pending</span>';
+  var pid = p.id;
+  var pname = p.name.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  var approveBtn = !p.approved
+    ? '<button class="btn-approve" onclick="approvePlayer(\'' + pid + '\')">&#10003; Approve</button>'
+    : '<button class="btn-approve" style="opacity:0.5" onclick="unapprovePlayer(\'' + pid + '\')">&#8629; Unapprove</button>';
+  var removeHtml =
+    '<button class="btn-remove-expand" onclick="toggleRemoveConfirm(\'' + pid + '\')">&times; Remove</button>'
+    + '<div class="remove-confirm-row" id="rc-' + pid + '">'
+    + 'Remove <strong>' + p.name + '</strong>? Cannot be undone. '
+    + '<button class="btn-danger" style="margin-left:8px;padding:3px 10px;font-size:0.75rem"'
+    + ' onclick="promptRemovePlayer(\'' + pid + '\',\'' + pname + '\')">Confirm</button>'
+    + ' <button onclick="toggleRemoveConfirm(\'' + pid + '\')"'
+    + ' style="background:none;border:none;color:#666;cursor:pointer;font-size:0.8rem">Cancel</button>'
+    + '</div>';
+  return '<tr>'
+    + '<td>' + p.name + '</td>'
+    + '<td style="font-size:0.8rem;color:#666">' + p.email + '</td>'
+    + '<td>' + pickTags + '</td>'
+    + '<td style="' + dm + ';font-size:0.8rem;white-space:nowrap">' + formatCT(p.submittedAt) + '</td>'
+    + '<td style="' + dm + ';font-size:0.8rem;white-space:nowrap">' + formatCT(p.approvedAt) + '</td>'
+    + '<td style="' + dm + ';color:#FF6B00">' + (scores[p.id]||0) + '</td>'
+    + '<td style="' + dm + ';color:#666">' + (maxScores[p.id]||0) + '</td>'
+    + '<td>' + statusBadge + '</td>'
+    + '<td style="display:flex;gap:6px;flex-wrap:wrap;min-width:160px">' + approveBtn + removeHtml + '</td>'
+    + '</tr>';
+}
+
+
 function renderAdmin(){
   if(!isAdmin) return;
   document.getElementById('admin-locked').style.display='none';
@@ -1186,32 +1225,7 @@ function renderAdmin(){
   const tbody=document.getElementById('adminPlayerRows');
   tbody.innerHTML=PLAYERS.length===0
     ?'<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--muted)">No players yet</td></tr>'
-    :PLAYERS.map(p=>{
-      const pickTags=(p.picks||[]).map(id=>{const t=getTeam(id);if(!t)return '';return '<span class="pick-tag '+(elimSet.has(id)?'eliminated':'alive')+'">#'+t.seed+' '+t.name+'</span>';}).join('');
-      const statusBadge=p.approved?'<span class="badge badge-green">Approved</span>':'<span class="badge badge-muted">Pending</span>';
-      const approveBtn=!p.approved
-        ?'<button class="btn-approve" onclick="approvePlayer(''+p.id+'')">✓ Approve</button>'
-        :'<button class="btn-approve" style="opacity:0.5" onclick="unapprovePlayer(''+p.id+'')">↩ Unapprove</button>';
-      const safeName=p.name.replace(/'/g,"\'");
-      const removeHtml='<button class="btn-remove-expand" onclick="toggleRemoveConfirm(''+p.id+'')">✕ Remove</button>'
-        +'<div class="remove-confirm-row" id="rc-'+p.id+'">'
-        +'⚠️ Remove <strong>'+p.name+'</strong>? This cannot be undone. '
-        +'<button class="btn-danger" style="margin-left:8px;padding:3px 10px;font-size:0.75rem" onclick="promptRemovePlayer(''+p.id+'',''+safeName+'')">Confirm Remove</button>'
-        +' <button onclick="toggleRemoveConfirm(''+p.id+'')" style="background:none;border:none;color:var(--muted);cursor:pointer;margin-left:6px;font-size:0.8rem">Cancel</button>'
-        +'</div>';
-      return '<tr>'
-        +'<td>'+p.name+'</td>'
-        +'<td style="font-size:0.8rem;color:var(--muted)">'+p.email+'</td>'
-        +'<td>'+pickTags+'</td>'
-        +'<td style="font-family:'DM Mono',monospace;font-size:0.8rem;white-space:nowrap">'+formatCT(p.submittedAt)+'</td>'
-        +'<td style="font-family:'DM Mono',monospace;font-size:0.8rem;white-space:nowrap">'+formatCT(p.approvedAt)+'</td>'
-        +'<td style="font-family:'DM Mono',monospace;color:var(--orange)">'+(scores[p.id]||0)+'</td>'
-        +'<td style="font-family:'DM Mono',monospace;color:var(--muted)">'+(maxScores[p.id]||0)+'</td>'
-        +'<td>'+statusBadge+'</td>'
-        +'<td style="display:flex;gap:6px;flex-wrap:wrap;min-width:160px">'+approveBtn+removeHtml+'</td>'
-        +'</tr>';
-    }).join('');
-
+    :PLAYERS.map(p=>buildPlayerRow(p,scores,maxScores,elimSet)).join('');
   // Tracking
   const trows=document.getElementById('trackingRows');
   trows.innerHTML=PLAYERS.length===0

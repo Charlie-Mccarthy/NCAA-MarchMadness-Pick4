@@ -634,38 +634,74 @@ const emailCfgRef   = db.collection('gameState').doc('emailConfig');
 // TEAMS & BRACKET DATA
 // ════════════════════════════════════════
 const FIELD = [
-  {id:'E1',name:'Duke',seed:1,region:'East'},{id:'E2',name:'UConn',seed:2,region:'East'},
-  {id:'E3',name:'Iowa State',seed:3,region:'East'},{id:'E4',name:'Purdue',seed:4,region:'East'},
-  {id:'E5',name:'Arkansas',seed:5,region:'East'},{id:'E6',name:'Louisville',seed:6,region:'East'},
-  {id:'E7',name:'Villanova',seed:7,region:'East'},{id:'E8',name:'Miami FL',seed:8,region:'East'},
-  {id:'E9',name:'Oklahoma',seed:9,region:'East'},{id:'E10',name:'Ohio State',seed:10,region:'East'},
-  {id:'E11',name:'VCU',seed:11,region:'East'},{id:'E12',name:'S. Florida',seed:12,region:'East'},
-  {id:'E13',name:'Liberty',seed:13,region:'East'},{id:'E14',name:'Troy',seed:14,region:'East'},
-  {id:'E15',name:'Furman',seed:15,region:'East'},{id:'E16',name:'Howard',seed:16,region:'East'},
-  {id:'W1',name:'Florida',seed:1,region:'West'},{id:'W2',name:'Michigan St.',seed:2,region:'West'},
-  {id:'W3',name:'Alabama',seed:3,region:'West'},{id:'W4',name:'Wisconsin',seed:4,region:'West'},
-  {id:'W5',name:'Vanderbilt',seed:5,region:'West'},{id:'W6',name:'Tennessee',seed:6,region:'West'},
-  {id:'W7',name:"Saint Mary's",seed:7,region:'West'},{id:'W8',name:'Utah State',seed:8,region:'West'},
-  {id:'W9',name:'Creighton',seed:9,region:'West'},{id:'W10',name:'UCLA',seed:10,region:'West'},
-  {id:'W11',name:'SMU',seed:11,region:'West'},{id:'W12',name:'Yale',seed:12,region:'West'},
-  {id:'W13',name:'N. Iowa',seed:13,region:'West'},{id:'W14',name:'Wofford',seed:14,region:'West'},
-  {id:'W15',name:'High Point',seed:15,region:'West'},{id:'W16',name:'UMBC',seed:16,region:'West'},
-  {id:'S1',name:'Auburn',seed:1,region:'South'},{id:'S2',name:"St. John's",seed:2,region:'South'},
-  {id:'S3',name:'Nebraska',seed:3,region:'South'},{id:'S4',name:'BYU',seed:4,region:'South'},
-  {id:'S5',name:'N. Carolina',seed:5,region:'South'},{id:'S6',name:'Georgetown',seed:6,region:'South'},
-  {id:'S7',name:'Kentucky',seed:7,region:'South'},{id:'S8',name:'Saint Louis',seed:8,region:'South'},
-  {id:'S9',name:'Penn State',seed:9,region:'South'},{id:'S10',name:'Missouri',seed:10,region:'South'},
-  {id:'S11',name:'Santa Clara',seed:11,region:'South'},{id:'S12',name:'SF Austin',seed:12,region:'South'},
-  {id:'S13',name:'Utah Valley',seed:13,region:'South'},{id:'S14',name:'Queens',seed:14,region:'South'},
-  {id:'S15',name:'LIU',seed:15,region:'South'},{id:'S16',name:'B-Cookman',seed:16,region:'South'},
-  {id:'M1',name:'Houston',seed:1,region:'Midwest'},{id:'M2',name:'Gonzaga',seed:2,region:'Midwest'},
-  {id:'M3',name:'Baylor',seed:3,region:'Midwest'},{id:'M4',name:'Indiana',seed:4,region:'Midwest'},
-  {id:'M5',name:'Georgia',seed:5,region:'Midwest'},{id:'M6',name:'Texas Tech',seed:6,region:'Midwest'},
-  {id:'M7',name:'Marquette',seed:7,region:'Midwest'},{id:'M8',name:'Iowa',seed:8,region:'Midwest'},
-  {id:'M9',name:'Ole Miss',seed:9,region:'Midwest'},{id:'M10',name:'Texas',seed:10,region:'Midwest'},
-  {id:'M11',name:'New Mexico',seed:11,region:'Midwest'},{id:'M12',name:'Drake',seed:12,region:'Midwest'},
-  {id:'M13',name:'Colgate',seed:13,region:'Midwest'},{id:'M14',name:'N. Iowa',seed:14,region:'Midwest'},
-  {id:'M15',name:'Morehead St.',seed:15,region:'Midwest'},{id:'M16',name:'Boston U.',seed:16,region:'Midwest'},
+  // EAST — #1 seed Duke
+  {id:'E1', name:'Duke',         seed:1,  region:'East'},
+  {id:'E2', name:'UConn',        seed:2,  region:'East'},
+  {id:'E3', name:'Illinois',     seed:3,  region:'East'},
+  {id:'E4', name:'Kansas',       seed:4,  region:'East'},
+  {id:'E5', name:'Wisconsin',    seed:5,  region:'East'},
+  {id:'E6', name:'BYU',          seed:6,  region:'East'},
+  {id:'E7', name:'Miami FL',     seed:7,  region:'East'},
+  {id:'E8', name:'Ohio State',   seed:8,  region:'East'},
+  {id:'E9', name:'St. Louis',    seed:9,  region:'East'},
+  {id:'E10',name:'Missouri',     seed:10, region:'East'},
+  {id:'E11',name:'VCU',          seed:11, region:'East'},
+  {id:'E12',name:'Akron',        seed:12, region:'East'},
+  {id:'E13',name:'Hawaii',       seed:13, region:'East'},
+  {id:'E14',name:'Troy',         seed:14, region:'East'},
+  {id:'E15',name:'Furman',       seed:15, region:'East'},
+  {id:'E16',name:'Siena',        seed:16, region:'East'},
+  // WEST — #1 seed Arizona
+  {id:'W1', name:'Arizona',      seed:1,  region:'West'},
+  {id:'W2', name:'Purdue',       seed:2,  region:'West'},
+  {id:'W3', name:'Virginia',     seed:3,  region:'West'},
+  {id:'W4', name:'Vanderbilt',   seed:4,  region:'West'},
+  {id:'W5', name:"St. John's",   seed:5,  region:'West'},
+  {id:'W6', name:'Tennessee',    seed:6,  region:'West'},
+  {id:"W7", name:"St. Mary's",   seed:7,  region:'West'},
+  {id:'W8', name:'Clemson',      seed:8,  region:'West'},
+  {id:'W9', name:'Iowa',         seed:9,  region:'West'},
+  {id:'W10',name:'UCF',          seed:10, region:'West'},
+  {id:'W11',name:'NC State',     seed:11, region:'West'},
+  {id:'W12',name:'McNeese',      seed:12, region:'West'},
+  {id:'W13',name:'Hofstra',      seed:13, region:'West'},
+  {id:'W14',name:'Idaho',        seed:14, region:'West'},
+  {id:'W15',name:'Penn',         seed:15, region:'West'},
+  {id:'W16',name:'Howard',       seed:16, region:'West'},
+  // SOUTH — #1 seed Florida
+  {id:'S1', name:'Florida',      seed:1,  region:'South'},
+  {id:'S2', name:'Houston',      seed:2,  region:'South'},
+  {id:'S3', name:'Nebraska',     seed:3,  region:'South'},
+  {id:'S4', name:'Gonzaga',      seed:4,  region:'South'},
+  {id:'S5', name:'Arkansas',     seed:5,  region:'South'},
+  {id:'S6', name:'N. Carolina',  seed:6,  region:'South'},
+  {id:'S7', name:'Kentucky',     seed:7,  region:'South'},
+  {id:'S8', name:'Georgia',      seed:8,  region:'South'},
+  {id:'S9', name:'Utah State',   seed:9,  region:'South'},
+  {id:'S10',name:'Texas A&M',    seed:10, region:'South'},
+  {id:'S11',name:'SMU',          seed:11, region:'South'},
+  {id:'S12',name:'High Point',   seed:12, region:'South'},
+  {id:'S13',name:'Cal Baptist',  seed:13, region:'South'},
+  {id:'S14',name:'Kennesaw St.', seed:14, region:'South'},
+  {id:'S15',name:'Tennessee St.',seed:15, region:'South'},
+  {id:'S16',name:'Prairie View', seed:16, region:'South'},
+  // MIDWEST — #1 seed Michigan
+  {id:'M1', name:'Michigan',     seed:1,  region:'Midwest'},
+  {id:'M2', name:'Iowa State',   seed:2,  region:'Midwest'},
+  {id:'M3', name:'Virginia',     seed:3,  region:'Midwest'},
+  {id:'M4', name:'Alabama',      seed:4,  region:'Midwest'},
+  {id:'M5', name:'Texas Tech',   seed:5,  region:'Midwest'},
+  {id:'M6', name:'Tennessee',    seed:6,  region:'Midwest'},
+  {id:'M7', name:'Kentucky',     seed:7,  region:'Midwest'},
+  {id:'M8', name:'Georgia',      seed:8,  region:'Midwest'},
+  {id:'M9', name:'Santa Clara',  seed:9,  region:'Midwest'},
+  {id:'M10',name:'Missouri',     seed:10, region:'Midwest'},
+  {id:'M11',name:'Miami OH',     seed:11, region:'Midwest'},
+  {id:'M12',name:'Akron',        seed:12, region:'Midwest'},
+  {id:'M13',name:'Hofstra',      seed:13, region:'Midwest'},
+  {id:'M14',name:'Wright State', seed:14, region:'Midwest'},
+  {id:'M15',name:'Tennessee St.',seed:15, region:'Midwest'},
+  {id:'M16',name:'UMBC',         seed:16, region:'Midwest'},
 ];
 const SEED_PAIRS = [[1,16],[8,9],[5,12],[4,13],[6,11],[3,14],[7,10],[2,15]];
 const REGIONS = ['East','West','South','Midwest'];
@@ -834,6 +870,7 @@ function showView(name){
   if(idx>=0) document.querySelectorAll('.nav-tab')[idx].classList.add('active');
   if(name==='home'){ updateEntryLockUI(); showStep('step-register'); }
   if(name==='dashboard') renderDashboard();
+  renderNotifications();
   if(name==='admin'){
     if(isAdmin){
       document.getElementById('admin-locked').style.display='none';
@@ -1030,8 +1067,9 @@ function renderDashboard(){
         const t=getTeam(id); if(!t)return '';
         return `<span class="pick-tag ${elimSet.has(id)?'eliminated':'alive'}">#${t.seed} ${t.name}</span>`;
       }).join('');
+      const rankLabel=['#1','#2','#3'][i]||'#'+(i+1);
       return `<div class="lb-row ${i===0&&lbSortMode==='score'?'highlight':''}">
-        <div class="lb-rank ${i<3?'top3':''}">${['🥇','🥈','🥉'][i]||'#'+(i+1)}</div>
+        <div class="lb-rank ${i<3?'top3':''}">${rankLabel}</div>
         <div><div class="lb-name">${p.name} ${badge}</div><div class="lb-picks">${pickTags}</div></div>
         <div class="lb-score">${scores[p.id]||0}</div>
         <div class="lb-max">max ${maxScores[p.id]||0}</div>
@@ -1073,7 +1111,7 @@ function renderDashboard(){
 // ════════════════════════════════════════
 // NOTIFICATIONS
 // ════════════════════════════════════════
-let notifReadTime = parseInt(localStorage.getItem('notifReadTime')||'0');
+
 
 function getNotifications(){
   // Build notification list from PLAYERS sorted by submittedAt descending
@@ -1097,27 +1135,51 @@ function getNotifications(){
 
 function renderNotifications(){
   const events=getNotifications();
-  const unread=events.filter(e=>e.time>notifReadTime).length;
+  const readTimes=getReadTimes();
+  const unread=events.filter(e=>!readTimes[e.time]).length;
+  // Only show badge in admin view
   const badge=document.getElementById('notifBadge');
-  if(badge){ badge.style.display=unread>0?'inline-flex':'none'; badge.textContent=unread>9?'9+':unread; }
+  if(badge){
+    const inAdmin=document.getElementById('view-admin')&&document.getElementById('view-admin').classList.contains('active');
+    badge.style.display=(unread>0&&inAdmin)?'inline-flex':'none';
+    badge.textContent=unread>9?'9+':unread;
+  }
   const feed=document.getElementById('notifFeed');
   if(!feed)return;
   if(events.length===0){
     feed.innerHTML='<div style="padding:1.5rem;text-align:center;color:var(--muted);font-size:0.85rem">No notifications yet</div>';
     return;
   }
-  feed.innerHTML=events.map(e=>`
-    <div class="notif-item ${e.time>notifReadTime?'unread':''}">
-      <div class="notif-dot ${e.time>notifReadTime?'':'read'}"></div>
-      <div><div class="notif-text">${e.text}</div><div class="notif-time">${e.sub}</div></div>
-    </div>`).join('');
+  feed.innerHTML=events.map(e=>{
+    const isRead=!!readTimes[e.time];
+    return `<div class="notif-item ${isRead?'':'unread'}" id="notif-${e.time}">
+      <div class="notif-dot ${isRead?'read':''}"></div>
+      <div style="flex:1"><div class="notif-text">${e.text}</div><div class="notif-time">${e.sub}</div></div>
+      <button onclick="toggleNotifRead(${e.time})" style="background:none;border:none;color:var(--muted);font-size:0.7rem;cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:0.5px;padding:2px 6px;flex-shrink:0" title="${isRead?'Mark unread':'Mark read'}">${isRead?'↩ unread':'✓ read'}</button>
+    </div>`;
+  }).join('');
+}
+
+function getReadTimes(){
+  try{ return JSON.parse(localStorage.getItem('notifReadTimes')||'{}'); }catch{ return {}; }
+}
+
+function toggleNotifRead(time){
+  const rt=getReadTimes();
+  if(rt[time]) delete rt[time]; else rt[time]=1;
+  localStorage.setItem('notifReadTimes',JSON.stringify(rt));
+  renderNotifications();
 }
 
 function markAllRead(){
-  notifReadTime=Date.now();
-  localStorage.setItem('notifReadTime',notifReadTime);
+  const events=getNotifications();
+  const rt=getReadTimes();
+  events.forEach(e=>{ rt[e.time]=1; });
+  localStorage.setItem('notifReadTimes',JSON.stringify(rt));
   renderNotifications();
 }
+
+
 
 // ════════════════════════════════════════
 // ADMIN RENDERING

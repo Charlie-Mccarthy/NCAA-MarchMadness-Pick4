@@ -369,8 +369,11 @@
         <h2>Enter to Play</h2>
         <div class="field-group"><label>Your Name</label><input type="text" id="playerName" placeholder="e.g. Jamie Whitfield"></div>
         <div class="field-group"><label>Email Address <span style="color:var(--red)">*</span></label><input type="email" id="playerEmail" placeholder="you@example.com"></div>
-        <button class="btn-primary" id="mainPlayBtn" onclick="startPicking()">Pick My Teams →</button>
-        <button class="btn-secondary" id="changePicksBtn" onclick="returnToMyPicks()">I Already Submitted — View / Change My Picks</button>
+        <button class="btn-primary" id="mainPlayBtn" onclick="startPicking()">Submit My Picks →</button>
+        <p style="margin-top:0.75rem;font-size:0.82rem;color:var(--muted);text-align:center">
+          Already submitted? Enter your name &amp; email above, then
+          <button id="changePicksBtn" onclick="returnToMyPicks()" style="background:none;border:none;color:var(--orange);cursor:pointer;font-size:0.82rem;font-family:'DM Sans',sans-serif;text-decoration:underline;padding:0">view or change your picks</button>.
+        </p>
       </div>
     </div>
   </div>
@@ -1016,7 +1019,7 @@ async function submitPicks(){
     if(isChangingPicks && changingPlayerId){
       docId=changingPlayerId;
       playerData={picks:[...currentSelections],submittedAt:now,approved:false,approvedAt:null};
-      await playersRef.doc(docId).update(playerData);
+      await playersRef.doc(docId).set(playerData,{merge:true});
       showToast('Picks updated — pending re-approval','success');
     } else {
       const data={name,email,picks:[...currentSelections],submittedAt:now,approved:false,approvedAt:null,tracking:false};

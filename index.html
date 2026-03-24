@@ -438,9 +438,18 @@
           <div style="display:flex;gap:0.75rem">
             <button class="sort-btn active" id="sortByScore" onclick="setLbSort('score')">Score <span class="sort-arrow">▼</span></button>
             <button class="sort-btn" id="sortByMax" onclick="setLbSort('max')">Max <span class="sort-arrow">▼</span></button>
+            <button class="sort-btn" id="sortByName" onclick="setLbSort('name')">Name <span class="sort-arrow">▼</span></button>
           </div>
         </div>
-        <div class="card-body" id="leaderboardBody"></div>
+        <div class="card-body">
+          <div style="display:grid;grid-template-columns:50px 1fr 72px 96px;padding:0 0.5rem;margin-bottom:4px;">
+            <div></div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer" onclick="setLbSort('name')" title="Sort by name">Name ↕</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:right">Score</div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:right">Max</div>
+          </div>
+          <div id="leaderboardBody"></div>
+        </div>
       </div>
     </div>
     <div class="card" style="margin-top:1.5rem">
@@ -450,6 +459,21 @@
     </div><!-- end dashMainContent -->
     <div class="tiebreaker-footnote">
       <strong>* Tiebreakers:</strong> 1st — team that advances furthest wins; 2nd — if equal, compare second-furthest team (and so on); Final — split if selections are identical.
+
+    <!-- Top Teams & Seeds by Points -->
+    <div style="margin-top:1.5rem">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;margin-bottom:1rem;color:var(--gold)">📊 Tournament Leaders</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem">Top Teams by Points Scored</div>
+          <div id="topTeamsTable"></div>
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:0.6rem">Top Seeds by Points Scored</div>
+          <div id="topSeedsTable"></div>
+        </div>
+      </div>
+    </div>
 
     <!-- Historical Results -->
     <div style="margin-top:1.5rem">
@@ -759,27 +783,125 @@ function buildFullBracket(){
   return games;
 }
 
+// Returns the earliest round (0-5) at which teamId currently appears or could appear
+function currentRoundForTeam(tid, games){
+  for(let r=5;r>=0;r--){
+    const rg=games.filter(g=>g.round===r);
+    if(rg.some(g=>GS.results[g.key]===tid)) return r+1; // already won this round
+    if(rg.some(g=>g.t1===tid||g.t2===tid)) return r;    // scheduled here
+  }
+  return 6; // eliminated
+}
+
+// Returns the game key of each round a team could play in, given they win every game
+function futureGameKeys(tid, startRound, games){
+  // Find which slot the team is in for startRound
+  let slotGame = games.find(g=>g.round===startRound&&(g.t1===tid||g.t2===tid||GS.results[g.key]===tid));
+  if(!slotGame) return [];
+  const keys=[];
+  let slot=slotGame.slot;
+  for(let r=startRound;r<=5;r++){
+    keys.push({round:r, slot});
+    slot=Math.floor(slot/2);
+  }
+  return keys;
+}
+
 function computeScores(playersArr){
   const games=buildFullBracket();
   const elimSet=new Set();
   games.forEach(g=>{ const w=GS.results[g.key]; if(w){ if(g.t1&&g.t1!==w)elimSet.add(g.t1); if(g.t2&&g.t2!==w)elimSet.add(g.t2); }});
+
   const scores={},maxScores={};
   playersArr.forEach(p=>{
-    let sc=0,mx=0;
-    (p.picks||[]).forEach(tid=>{
-      const team=getTeam(tid);const seed=team?team.seed:1;
-      games.forEach(g=>{ if(GS.results[g.key]===tid)sc+=ROUNDS[g.round].pts*seed; });
-      if(!elimSet.has(tid)){
-        let cr=0;
-        for(let r=5;r>=0;r--){
-          const rg=games.filter(g=>g.round===r);
-          if(rg.some(g=>GS.results[g.key]===tid)){cr=r+1;break;}
-          if(rg.some(g=>g.t1===tid||g.t2===tid)){cr=r;break;}
-        }
-        for(let r=cr;r<=5;r++) mx+=ROUNDS[r].pts*seed;
-      }
+    let sc=0;
+    const alive=(p.picks||[]).filter(tid=>!elimSet.has(tid));
+    const deadPts=(p.picks||[]).filter(tid=>elimSet.has(tid)).reduce((sum,tid)=>{
+      const seed=(getTeam(tid)||{seed:1}).seed;
+      let pts=0;
+      games.forEach(g=>{ if(GS.results[g.key]===tid) pts+=ROUNDS[g.round].pts*seed; });
+      return sum+pts;
+    },0);
+    sc=deadPts;
+    // Add points already scored by alive teams
+    alive.forEach(tid=>{
+      const seed=(getTeam(tid)||{seed:1}).seed;
+      games.forEach(g=>{ if(GS.results[g.key]===tid) sc+=ROUNDS[g.round].pts*seed; });
     });
-    scores[p.id]=sc; maxScores[p.id]=sc+mx;
+    scores[p.id]=sc;
+
+    // Max score: for each alive team, credit it points round-by-round,
+    // but stop crediting a team at the earliest round where it must face
+    // another of the player's alive picks (bracket collision).
+    // At a collision, we credit only the higher-value team for that round
+    // and beyond (greedy: pick the one that would score more from here).
+    let mx=sc;
+
+    // Build path map: tid -> [{round, slot}] for all future rounds
+    const pathMap={};
+    alive.forEach(tid=>{
+      const startRound=currentRoundForTeam(tid,games);
+      pathMap[tid]=startRound>5?[]:futureGameKeys(tid,startRound,games);
+    });
+
+    // For each pair of alive picks, find the round they first share a slot
+    // (i.e. must meet). Mark the loser (lower future value) as blocked from
+    // that round onward. Use a greedy tournament simulation.
+    // We work team-by-team: each team earns points up to (but not including)
+    // the round it collides with a "surviving" teammate.
+
+    // Score each team's contribution independently, stopping at first collision
+    const blocked=new Set(); // teams that lose a collision and are blocked
+
+    // Compute future pts a team earns from a given round onward (ignoring collisions)
+    function futurePts(tid, fromRound){
+      const seed=(getTeam(tid)||{seed:1}).seed;
+      return (pathMap[tid]||[])
+        .filter(({round})=>round>=fromRound)
+        .reduce((sum,{round})=>sum+ROUNDS[round].pts*seed, 0);
+    }
+
+    // Find collisions: for each pair, find earliest shared slot
+    const collisionRounds={}; // key: tid -> earliest round it collides with another alive pick
+    alive.forEach(tid=>{
+      alive.forEach(t2=>{
+        if(t2<=tid) return; // avoid double-processing
+        const p1=pathMap[tid]||[];
+        const p2=pathMap[t2]||[];
+        // Find earliest round where both share the same slot
+        let firstCollision=null;
+        for(const {round:r1,slot:s1} of p1){
+          for(const {round:r2,slot:s2} of p2){
+            if(r1===r2&&s1===s2){
+              if(firstCollision===null||r1<firstCollision.round){
+                firstCollision={round:r1,tid1:tid,tid2:t2};
+              }
+            }
+          }
+        }
+        if(firstCollision!==null){
+          const r=firstCollision.round;
+          // The team with lower future value from this round gets blocked
+          const pts1=futurePts(tid,r);
+          const pts2=futurePts(t2,r);
+          const loser=pts1>=pts2?t2:tid;
+          // Record earliest collision round for each team
+          if(collisionRounds[loser]===undefined||r<collisionRounds[loser]){
+            collisionRounds[loser]=r;
+          }
+        }
+      });
+    });
+
+    // Now accumulate max score: each alive team earns points up to its collision
+    alive.forEach(tid=>{
+      const seed=(getTeam(tid)||{seed:1}).seed;
+      const stopAt=collisionRounds[tid]!==undefined?collisionRounds[tid]:999;
+      (pathMap[tid]||[]).forEach(({round})=>{
+        if(round<stopAt) mx+=ROUNDS[round].pts*seed;
+      });
+    });
+    maxScores[p.id]=mx;
   });
   return{scores,maxScores,elimSet};
 }
@@ -1077,6 +1199,7 @@ function setLbSort(mode){
   lbSortMode=mode;
   document.getElementById('sortByScore').classList.toggle('active',mode==='score');
   document.getElementById('sortByMax').classList.toggle('active',mode==='max');
+  document.getElementById('sortByName').classList.toggle('active',mode==='name');
   renderDashboard();
 }
 
@@ -1089,7 +1212,7 @@ function renderDashboard(){
   const{scores,maxScores,elimSet}=computeScores(approved);
   const sortedByScore=[...approved].sort((a,b)=>(scores[b.id]||0)-(scores[a.id]||0));
   const sortedByMax=[...approved].sort((a,b)=>(maxScores[b.id]||0)-(maxScores[a.id]||0));
-  const sorted=lbSortMode==='max'?sortedByMax:sortedByScore;
+  const sorted=lbSortMode==='name'?[...approved].sort((a,b)=>a.name.localeCompare(b.name)):lbSortMode==='max'?sortedByMax:sortedByScore;
   const placeEmoji={1:'🥇',2:'🥈',3:'🥉',4:'4️⃣'};
 
   const hiddenBanner=document.getElementById('leaderboardHiddenBanner');
@@ -1105,7 +1228,8 @@ function renderDashboard(){
   if(sorted.length===0){
     lb.innerHTML='<div class="empty-state"><div class="es-icon">🏀</div><p>No approved players yet.</p></div>';
   } else {
-    lb.innerHTML=sorted.map((p,i)=>{
+    const lbHeader='<div class="lb-row" style="opacity:0.5;font-size:0.72rem;font-family:\'DM Mono\',monospace;letter-spacing:1px;padding-bottom:0.25rem;border-bottom:1px solid var(--mid);margin-bottom:0.25rem"><div></div><div>NAME</div><div>PTS</div><div>MAX</div></div>';
+    lb.innerHTML=lbHeader+sorted.map((p,i)=>{
       const placeNum=Object.keys(GS.places).find(k=>GS.places[k]===p.id);
       const badge=placeNum?`<span class="winner-badge">${placeEmoji[placeNum]} ${['','1st','2nd','3rd','4th'][placeNum]}</span>`:'';
       const pickTags=(p.picks||[]).map(id=>{
@@ -1141,8 +1265,51 @@ function renderDashboard(){
     </tbody></table>`;
 }
 
+  // ── Top Teams by Points ─────────────────────────────────────────
+  const topTeamsEl=document.getElementById('topTeamsTable');
+  if(topTeamsEl){
+    var teamPts2={};
+    var allG=buildFullBracket();
+    FIELD.forEach(function(t){
+      var pts=0;
+      allG.forEach(function(g){ if(GS.results[g.key]===t.id) pts+=ROUNDS[g.round].pts*t.seed; });
+      if(pts>0) teamPts2[t.id]=pts;
+    });
+    var tArr=Object.entries(teamPts2).sort(function(a,b){return b[1]-a[1];});
+    if(tArr.length===0){
+      topTeamsEl.innerHTML='<div style="color:var(--muted);font-size:0.85rem;padding:0.5rem">No points scored yet</div>';
+    } else {
+      var tHtml='<table class="picks-table"><thead><tr><th>Team</th><th>Seed</th><th style="text-align:right">Pts</th></tr></thead><tbody>';
+      tArr.forEach(function(e){ var t=getTeam(e[0]);if(!t)return;
+        tHtml+='<tr><td>'+t.name+'</td><td style="color:var(--muted);font-size:0.8rem">#'+t.seed+'</td><td style="text-align:right;color:var(--orange)">'+e[1]+'</td></tr>';
+      });
+      topTeamsEl.innerHTML=tHtml+'</tbody></table>';
+    }
+  }
+
+  const topSeedsEl=document.getElementById('topSeedsTable');
+  if(topSeedsEl){
+    var seedPts2={};
+    var allG2=buildFullBracket();
+    FIELD.forEach(function(t){
+      var pts=0;
+      allG2.forEach(function(g){ if(GS.results[g.key]===t.id) pts+=ROUNDS[g.round].pts*t.seed; });
+      if(pts>0) seedPts2[t.seed]=(seedPts2[t.seed]||0)+pts;
+    });
+    var sArr=Object.entries(seedPts2).sort(function(a,b){return b[1]-a[1];});
+    if(sArr.length===0){
+      topSeedsEl.innerHTML='<div style="color:var(--muted);font-size:0.85rem;padding:0.5rem">No points scored yet</div>';
+    } else {
+      var sHtml='<table class="picks-table"><thead><tr><th>Seed</th><th style="text-align:right">Total Pts</th></tr></thead><tbody>';
+      sArr.forEach(function(e){
+        sHtml+='<tr><td>#'+e[0]+'</td><td style="text-align:right;color:var(--orange)">'+e[1]+'</td></tr>';
+      });
+      topSeedsEl.innerHTML=sHtml+'</tbody></table>';
+    }
+  }
 
 // ════════════════════════════════════════
+// NOTIFICATIONS// ════════════════════════════════════════
 // NOTIFICATIONS
 // ════════════════════════════════════════
 

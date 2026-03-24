@@ -850,12 +850,12 @@ function computeScores(playersArr){
     const blocked=new Set(); // teams that lose a collision and are blocked
 
     // Compute future pts a team earns from a given round onward (ignoring collisions)
-    function futurePts(tid, fromRound){
+    const futurePts=(tid, fromRound)=>{
       const seed=(getTeam(tid)||{seed:1}).seed;
       return (pathMap[tid]||[])
         .filter(({round})=>round>=fromRound)
         .reduce((sum,{round})=>sum+ROUNDS[round].pts*seed, 0);
-    }
+    };
 
     // Find collisions: for each pair, find earliest shared slot
     const collisionRounds={}; // key: tid -> earliest round it collides with another alive pick

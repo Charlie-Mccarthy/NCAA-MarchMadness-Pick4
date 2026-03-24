@@ -1261,14 +1261,15 @@ function renderDashboard(){
         <td>${team.seed}</td><td>${team.region}</td>
         <td style="font-family:'DM Mono',monospace;color:var(--orange)">${cnt}</td>
       </tr>`).join('')}
-    </tbody></table>`;
-}
+        </tbody></table>`;
+  }
 
   // ── Top Teams by Points ─────────────────────────────────────────
   const topTeamsEl=document.getElementById('topTeamsTable');
   if(topTeamsEl){
     var teamPts2={};
-    games.forEach(function(g){
+    var gamesForPts=buildFullBracket();
+    gamesForPts.forEach(function(g){
       const w=GS.results[g.key];
       if(w){ const t=getTeam(w); if(t) teamPts2[w]=(teamPts2[w]||0)+ROUNDS[g.round].pts*t.seed; }
     });
@@ -1287,7 +1288,8 @@ function renderDashboard(){
   const topSeedsEl=document.getElementById('topSeedsTable');
   if(topSeedsEl){
     var seedPts2={};
-    games.forEach(function(g){
+    var gamesForSeeds=buildFullBracket();
+    gamesForSeeds.forEach(function(g){
       const w=GS.results[g.key];
       if(w){ const t=getTeam(w); if(t) seedPts2[t.seed]=(seedPts2[t.seed]||0)+ROUNDS[g.round].pts*t.seed; }
     });

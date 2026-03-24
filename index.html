@@ -438,11 +438,11 @@
           <div></div>
         </div>
         <div class="card-body">
-          <div style="display:grid;grid-template-columns:50px 1fr 72px 96px;padding:4px 0.75rem 6px;border-bottom:1px solid var(--dark4);margin-bottom:2px;">
+          <div style="display:grid;grid-template-columns:50px 1fr 72px 96px;padding:6px 0.75rem 8px;border-bottom:1px solid var(--mid);margin-bottom:4px;">
             <div></div>
-            <div id="sortByName" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none" onclick="setLbSort(&quot;name&quot;)">Name <span id="nameArrow"></span></div>
-            <div id="sortByScore" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--orange);cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;score&quot;)">Score <span id="scoreArrow">&#9660;</span></div>
-            <div id="sortByMax" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;max&quot;)">Max <span id="maxArrow"></span></div>
+            <div id="sortByName" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;cursor:pointer;user-select:none" onclick="setLbSort(&quot;name&quot;)">Name <span id="nameArrow"></span></div>
+            <div id="sortByScore" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--orange);font-weight:600;cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;score&quot;)">Score <span id="scoreArrow">&#9660;</span></div>
+            <div id="sortByMax" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;max&quot;)">Max <span id="maxArrow"></span></div>
           </div>
           <div id="leaderboardBody"></div>
         </div>
@@ -791,14 +791,16 @@ function currentRoundForTeam(tid, games){
 
 // Returns the game key of each round a team could play in, given they win every game
 function futureGameKeys(tid, startRound, games){
-  // Find which slot the team is in for startRound
-  let slotGame = games.find(g=>g.round===startRound&&(g.t1===tid||g.t2===tid||GS.results[g.key]===tid));
-  if(!slotGame) return [];
+  // Find starting game
+  let currentGame = games.find(g=>g.round===startRound&&(g.t1===tid||g.t2===tid||GS.results[g.key]===tid));
+  if(!currentGame) return [];
   const keys=[];
-  let slot=slotGame.slot;
-  for(let r=startRound;r<=5;r++){
-    keys.push({round:r, slot});
-    slot=Math.floor(slot/2);
+  for(let r=startRound; r<=5; r++){
+    if(!currentGame) break;
+    keys.push({round:r, slot:currentGame.slot, key:currentGame.key});
+    // Find the next round game that has this game's key as a parent
+    const nextGame = games.find(g=>g.round===r+1&&(g.p1===currentGame.key||g.p2===currentGame.key));
+    currentGame = nextGame||null;
   }
   return keys;
 }

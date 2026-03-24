@@ -1227,8 +1227,7 @@ function renderDashboard(){
   if(sorted.length===0){
     lb.innerHTML='<div class="empty-state"><div class="es-icon">🏀</div><p>No approved players yet.</p></div>';
   } else {
-    const lbHeader='<div class="lb-row" style="opacity:0.5;font-size:0.72rem;font-family:\'DM Mono\',monospace;letter-spacing:1px;padding-bottom:0.25rem;border-bottom:1px solid var(--mid);margin-bottom:0.25rem"><div></div><div>NAME</div><div>PTS</div><div>MAX</div></div>';
-    lb.innerHTML=lbHeader+sorted.map((p,i)=>{
+    lb.innerHTML=sorted.map((p,i)=>{
       const placeNum=Object.keys(GS.places).find(k=>GS.places[k]===p.id);
       const badge=placeNum?`<span class="winner-badge">${placeEmoji[placeNum]} ${['','1st','2nd','3rd','4th'][placeNum]}</span>`:'';
       const pickTags=(p.picks||[]).map(id=>{
@@ -1262,8 +1261,7 @@ function renderDashboard(){
         <td style="font-family:'DM Mono',monospace;color:var(--orange)">${cnt}</td>
       </tr>`).join('')}
         </tbody></table>`;
-  }
-
+  
   // ── Top Teams by Points ─────────────────────────────────────────
   const topTeamsEl=document.getElementById('topTeamsTable');
   if(topTeamsEl){
@@ -1304,6 +1302,7 @@ function renderDashboard(){
       topSeedsEl.innerHTML=sHtml+'</tbody></table>';
     }
   }
+}
 
 // ════════════════════════════════════════
 // NOTIFICATIONS// ════════════════════════════════════════

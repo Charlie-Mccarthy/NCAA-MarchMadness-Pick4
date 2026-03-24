@@ -435,18 +435,14 @@
       <div class="card">
         <div class="card-header">
           <h3>Standings</h3>
-          <div style="display:flex;gap:0.75rem">
-            <button class="sort-btn active" id="sortByScore" onclick="setLbSort('score')">Score <span class="sort-arrow">▼</span></button>
-            <button class="sort-btn" id="sortByMax" onclick="setLbSort('max')">Max <span class="sort-arrow">▼</span></button>
-            <button class="sort-btn" id="sortByName" onclick="setLbSort('name')">Name <span class="sort-arrow">▼</span></button>
-          </div>
+          <div></div>
         </div>
         <div class="card-body">
-          <div style="display:grid;grid-template-columns:50px 1fr 72px 96px;padding:0 0.5rem;margin-bottom:4px;">
+          <div style="display:grid;grid-template-columns:50px 1fr 72px 96px;padding:4px 0.75rem 6px;border-bottom:1px solid var(--dark4);margin-bottom:2px;">
             <div></div>
-            <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer" onclick="setLbSort('name')" title="Sort by name">Name ↕</div>
-            <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:right">Score</div>
-            <div style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);text-align:right">Max</div>
+            <div onclick="setLbSort('name')" id="sortByName" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none">Name <span id="nameArrow"></span></div>
+            <div onclick="setLbSort('score')" id="sortByScore" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--orange);cursor:pointer;user-select:none;text-align:right">Score <span id="scoreArrow">▼</span></div>
+            <div onclick="setLbSort('max')" id="sortByMax" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;text-align:right">Max <span id="maxArrow"></span></div>
           </div>
           <div id="leaderboardBody"></div>
         </div>
@@ -776,8 +772,8 @@ function buildFullBracket(){
   for(let s=0;s<16;s++) games.push({key:`R1_${s}`,round:1,slot:s,t1:null,t2:null,p1:`R0_${s*2}`,p2:`R0_${s*2+1}`,region:REGIONS[Math.floor(s/4)]});
   for(let s=0;s<8;s++)  games.push({key:`R2_${s}`,round:2,slot:s,t1:null,t2:null,p1:`R1_${s*2}`,p2:`R1_${s*2+1}`,region:REGIONS[Math.floor(s/2)]});
   for(let s=0;s<4;s++)  games.push({key:`R3_${s}`,round:3,slot:s,t1:null,t2:null,p1:`R2_${s*2}`,p2:`R2_${s*2+1}`,region:REGIONS[s]});
-  games.push({key:'R4_0',round:4,slot:0,t1:null,t2:null,p1:'R3_0',p2:'R3_1',region:'Semis'});
-  games.push({key:'R4_1',round:4,slot:1,t1:null,t2:null,p1:'R3_2',p2:'R3_3',region:'Semis'});
+  games.push({key:'R4_0',round:4,slot:0,t1:null,t2:null,p1:'R3_0',p2:'R3_2',region:'Semis'});
+  games.push({key:'R4_1',round:4,slot:1,t1:null,t2:null,p1:'R3_1',p2:'R3_3',region:'Semis'});
   games.push({key:'R5_0',round:5,slot:0,t1:null,t2:null,p1:'R4_0',p2:'R4_1',region:'Final'});
   games.forEach(g=>{ if(g.p1)g.t1=GS.results[g.p1]||null; if(g.p2)g.t2=GS.results[g.p2]||null; });
   return games;
@@ -1197,9 +1193,12 @@ function showConfirmation(player,justSubmitted,readOnly){
 let lbSortMode='score';
 function setLbSort(mode){
   lbSortMode=mode;
-  document.getElementById('sortByScore').classList.toggle('active',mode==='score');
-  document.getElementById('sortByMax').classList.toggle('active',mode==='max');
-  document.getElementById('sortByName').classList.toggle('active',mode==='name');
+  ['score','max','name'].forEach(m=>{
+    const el=document.getElementById('sortBy'+m.charAt(0).toUpperCase()+m.slice(1));
+    if(el) el.style.color=m===mode?'var(--orange)':'var(--muted)';
+    const arrow=document.getElementById(m+'Arrow');
+    if(arrow) arrow.textContent=m===mode?'▼':'';
+  });
   renderDashboard();
 }
 
@@ -1269,11 +1268,9 @@ function renderDashboard(){
   const topTeamsEl=document.getElementById('topTeamsTable');
   if(topTeamsEl){
     var teamPts2={};
-    var allG=buildFullBracket();
-    FIELD.forEach(function(t){
-      var pts=0;
-      allG.forEach(function(g){ if(GS.results[g.key]===t.id) pts+=ROUNDS[g.round].pts*t.seed; });
-      if(pts>0) teamPts2[t.id]=pts;
+    games.forEach(function(g){
+      const w=GS.results[g.key];
+      if(w){ const t=getTeam(w); if(t) teamPts2[w]=(teamPts2[w]||0)+ROUNDS[g.round].pts*t.seed; }
     });
     var tArr=Object.entries(teamPts2).sort(function(a,b){return b[1]-a[1];});
     if(tArr.length===0){
@@ -1290,11 +1287,9 @@ function renderDashboard(){
   const topSeedsEl=document.getElementById('topSeedsTable');
   if(topSeedsEl){
     var seedPts2={};
-    var allG2=buildFullBracket();
-    FIELD.forEach(function(t){
-      var pts=0;
-      allG2.forEach(function(g){ if(GS.results[g.key]===t.id) pts+=ROUNDS[g.round].pts*t.seed; });
-      if(pts>0) seedPts2[t.seed]=(seedPts2[t.seed]||0)+pts;
+    games.forEach(function(g){
+      const w=GS.results[g.key];
+      if(w){ const t=getTeam(w); if(t) seedPts2[t.seed]=(seedPts2[t.seed]||0)+ROUNDS[g.round].pts*t.seed; }
     });
     var sArr=Object.entries(seedPts2).sort(function(a,b){return b[1]-a[1];});
     if(sArr.length===0){

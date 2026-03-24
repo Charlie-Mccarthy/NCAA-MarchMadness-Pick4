@@ -440,9 +440,9 @@
         <div class="card-body">
           <div style="display:grid;grid-template-columns:50px 1fr 72px 96px;padding:4px 0.75rem 6px;border-bottom:1px solid var(--dark4);margin-bottom:2px;">
             <div></div>
-            <div onclick="setLbSort('name')" id="sortByName" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none">Name <span id="nameArrow"></span></div>
-            <div onclick="setLbSort('score')" id="sortByScore" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--orange);cursor:pointer;user-select:none;text-align:right">Score <span id="scoreArrow">▼</span></div>
-            <div onclick="setLbSort('max')" id="sortByMax" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;text-align:right">Max <span id="maxArrow"></span></div>
+            <div id="sortByName" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none" onclick="setLbSort(&quot;name&quot;)">Name <span id="nameArrow"></span></div>
+            <div id="sortByScore" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--orange);cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;score&quot;)">Score <span id="scoreArrow">&#9660;</span></div>
+            <div id="sortByMax" style="font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:1px;text-transform:uppercase;color:var(--muted);cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;max&quot;)">Max <span id="maxArrow"></span></div>
           </div>
           <div id="leaderboardBody"></div>
         </div>

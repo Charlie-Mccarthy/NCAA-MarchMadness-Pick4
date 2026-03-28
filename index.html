@@ -150,7 +150,7 @@
   .card-header h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:2px;color:var(--white);}
   .card-header span{font-family:'DM Mono',monospace;font-size:0.7rem;color:var(--muted);letter-spacing:1px;}
   .card-body{padding:0;}
-  .lb-row{display:grid;grid-template-columns:50px 1fr 72px 96px;align-items:center;padding:0.7rem 1.2rem;border-bottom:1px solid var(--dark3);gap:0.5rem;transition:background 0.15s;}
+  .lb-row{display:grid;grid-template-columns:50px 1fr 60px 80px 80px;align-items:center;padding:0.7rem 1.2rem;border-bottom:1px solid var(--dark3);gap:0.5rem;transition:background 0.15s;}
   .lb-row:last-child{border-bottom:none;}
   .lb-row:hover{background:var(--dark3);}
   .lb-row.highlight{background:rgba(255,107,0,0.06);}
@@ -438,11 +438,12 @@
           <div></div>
         </div>
         <div class="card-body">
-          <div style="display:grid;grid-template-columns:50px 1fr 72px 96px;padding:6px 0.75rem 8px;border-bottom:1px solid var(--mid);margin-bottom:4px;">
+          <div style="display:grid;grid-template-columns:50px 1fr 60px 80px 80px;padding:6px 0.75rem 8px;border-bottom:1px solid var(--mid);margin-bottom:4px;">
             <div></div>
             <div id="sortByName" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;cursor:pointer;user-select:none" onclick="setLbSort(&quot;name&quot;)">Name <span id="nameArrow"></span></div>
             <div id="sortByScore" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--orange);font-weight:600;cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;score&quot;)">Score <span id="scoreArrow">&#9660;</span></div>
             <div id="sortByMax" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;max&quot;)">Max <span id="maxArrow"></span></div>
+            <div style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;text-align:right">Win %</div>
           </div>
           <div id="leaderboardBody"></div>
         </div>
@@ -1189,6 +1190,107 @@ function showConfirmation(player,justSubmitted,readOnly){
   showStep('step-confirm');
 }
 
+
+// ════════════════════════════════════════
+// WIN PROBABILITY (Monte Carlo)
+// ════════════════════════════════════════
+
+// Team win probabilities from FiveThirtyEight (Elite Eight stage)
+// Format: teamId -> { f4: P(make Final Four), champ: P(win Championship) }
+const WIN_PROBS = {
+  'E1': {f4:0.67, champ:0.21},  // Duke
+  'E2': {f4:0.33, champ:0.06},  // UConn
+  'W1': {f4:0.60, champ:0.24},  // Arizona
+  'W2': {f4:0.40, champ:0.11},  // Purdue
+  'S3': {f4:0.71, champ:0.09},  // Illinois
+  'S9': {f4:0.29, champ:0.005}, // Iowa
+  'M1': {f4:0.74, champ:0.25},  // Michigan
+  'M6': {f4:0.26, champ:0.03},  // Tennessee
+};
+
+function simulateTournament(results){
+  // Returns a simulated set of results for remaining games
+  // Start from current GS.results and simulate forward
+  const sim = Object.assign({}, results);
+  const games = buildFullBracket();
+
+  // Resolve each game in order, using sim results for parent games
+  games.forEach(g => {
+    if(sim[g.key]) return; // already have a result
+    // Get t1 and t2 from parent results
+    const t1 = g.p1 ? (sim[g.p1] || null) : g.t1;
+    const t2 = g.p2 ? (sim[g.p2] || null) : g.t2;
+    if(!t1 && !t2) return;
+    if(!t1) { sim[g.key]=t2; return; }
+    if(!t2) { sim[g.key]=t1; return; }
+
+    // Both teams present - use win probability
+    // P(t1 wins) based on their relative championship odds
+    const p1 = WIN_PROBS[t1] ? WIN_PROBS[t1].champ : 0.5;
+    const p2 = WIN_PROBS[t2] ? WIN_PROBS[t2].champ : 0.5;
+    const total = p1 + p2;
+    const probT1 = total > 0 ? p1/total : 0.5;
+    sim[g.key] = Math.random() < probT1 ? t1 : t2;
+  });
+
+  return sim;
+}
+
+function scorePicksWithResults(picks, simResults){
+  const games = buildFullBracket();
+  let sc = 0;
+  games.forEach(g => {
+    const w = simResults[g.key];
+    if(w && picks.includes(w)){
+      const t = getTeam(w);
+      if(t) sc += ROUNDS[g.round].pts * t.seed;
+    }
+  });
+  return sc;
+}
+
+function computeWinProbabilities(players, N){
+  // N = number of simulations
+  N = N || 10000;
+  const wins = {};
+  players.forEach(p => { wins[p.id] = 0; });
+
+  for(let i=0; i<N; i++){
+    const simResults = simulateTournament(GS.results);
+    // Score each player
+    let topScore = -1;
+    let topPlayers = [];
+    players.forEach(p => {
+      const sc = scorePicksWithResults(p.picks||[], simResults);
+      if(sc > topScore){ topScore=sc; topPlayers=[p.id]; }
+      else if(sc === topScore){ topPlayers.push(p.id); }
+    });
+    // In case of tie, split credit
+    topPlayers.forEach(id => { wins[id] += 1/topPlayers.length; });
+  }
+
+  // Convert to percentages
+  const probs = {};
+  players.forEach(p => { probs[p.id] = wins[p.id]/N; });
+  return probs;
+}
+
+let cachedWinProbs = null;
+let winProbsComputedAt = 0;
+
+function getWinProbabilities(players){
+  // Recompute if results changed (cache for 30s to avoid re-running on every render)
+  const now = Date.now();
+  const resultsKey = JSON.stringify(GS.results);
+  if(cachedWinProbs && (now - winProbsComputedAt < 30000) && cachedWinProbs.key === resultsKey){
+    return cachedWinProbs.probs;
+  }
+  const probs = computeWinProbabilities(players, 10000);
+  cachedWinProbs = { probs, key: resultsKey };
+  winProbsComputedAt = now;
+  return probs;
+}
+
 // ════════════════════════════════════════
 // DASHBOARD (re-renders on every snapshot)
 // ════════════════════════════════════════
@@ -1226,6 +1328,7 @@ function renderDashboard(){
   }
   const lb=document.getElementById('leaderboardBody');
   if(!lb)return;
+  const winProbs=getWinProbabilities(approved);
   if(sorted.length===0){
     lb.innerHTML='<div class="empty-state"><div class="es-icon">🏀</div><p>No approved players yet.</p></div>';
   } else {
@@ -1242,6 +1345,7 @@ function renderDashboard(){
         <div><div class="lb-name">${p.name} ${badge}</div><div class="lb-picks">${pickTags}</div></div>
         <div class="lb-score">${scores[p.id]||0}</div>
         <div class="lb-max">max ${maxScores[p.id]||0}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:0.85rem;text-align:right;color:${winProbs[p.id]>=0.20?'var(--gold)':winProbs[p.id]>=0.10?'var(--orange)':winProbs[p.id]>=0.05?'var(--light)':'var(--muted)'};font-weight:600">${winProbs[p.id]<0.001?'<1%':(winProbs[p.id]*100).toFixed(1)+'%'}</div>
       </div>`;
     }).join('');
   }

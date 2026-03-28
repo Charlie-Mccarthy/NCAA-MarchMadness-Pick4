@@ -443,7 +443,7 @@
             <div id="sortByName" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;cursor:pointer;user-select:none" onclick="setLbSort(&quot;name&quot;)">Name <span id="nameArrow"></span></div>
             <div id="sortByScore" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--orange);font-weight:600;cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;score&quot;)">Score <span id="scoreArrow">&#9660;</span></div>
             <div id="sortByMax" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;cursor:pointer;user-select:none;text-align:right" onclick="setLbSort(&quot;max&quot;)">Max <span id="maxArrow"></span></div>
-            <div style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;text-align:right">Win %</div>
+            <div id="sortByWin" onclick="setLbSort(&quot;win&quot;)" style="font-family:'DM Mono',monospace;font-size:0.78rem;letter-spacing:1px;text-transform:uppercase;color:var(--light);font-weight:600;text-align:right;cursor:pointer;user-select:none">Win % <span id="winArrow"></span></div>
           </div>
           <div id="leaderboardBody"></div>
         </div>
@@ -1297,9 +1297,9 @@ function getWinProbabilities(players){
 let lbSortMode='score';
 function setLbSort(mode){
   lbSortMode=mode;
-  ['score','max','name'].forEach(m=>{
+  ['score','max','name','win'].forEach(m=>{
     const el=document.getElementById('sortBy'+m.charAt(0).toUpperCase()+m.slice(1));
-    if(el) el.style.color=m===mode?'var(--orange)':'var(--muted)';
+    if(el) el.style.color=m===mode?'var(--orange)':'var(--light)';
     const arrow=document.getElementById(m+'Arrow');
     if(arrow) arrow.textContent=m===mode?'▼':'';
   });
@@ -1315,7 +1315,9 @@ function renderDashboard(){
   const{scores,maxScores,elimSet}=computeScores(approved);
   const sortedByScore=[...approved].sort((a,b)=>(scores[b.id]||0)-(scores[a.id]||0));
   const sortedByMax=[...approved].sort((a,b)=>(maxScores[b.id]||0)-(maxScores[a.id]||0));
-  const sorted=lbSortMode==='name'?[...approved].sort((a,b)=>a.name.localeCompare(b.name)):lbSortMode==='max'?sortedByMax:sortedByScore;
+  const winProbs=getWinProbabilities(approved);
+  const sortedByWin=[...approved].sort((a,b)=>(winProbs[b.id]||0)-(winProbs[a.id]||0));
+  const sorted=lbSortMode==='name'?[...approved].sort((a,b)=>a.name.localeCompare(b.name)):lbSortMode==='max'?sortedByMax:lbSortMode==='win'?sortedByWin:sortedByScore;
   const placeEmoji={1:'🥇',2:'🥈',3:'🥉',4:'4️⃣'};
 
   const hiddenBanner=document.getElementById('leaderboardHiddenBanner');
@@ -1328,7 +1330,6 @@ function renderDashboard(){
   }
   const lb=document.getElementById('leaderboardBody');
   if(!lb)return;
-  const winProbs=getWinProbabilities(approved);
   if(sorted.length===0){
     lb.innerHTML='<div class="empty-state"><div class="es-icon">🏀</div><p>No approved players yet.</p></div>';
   } else {
